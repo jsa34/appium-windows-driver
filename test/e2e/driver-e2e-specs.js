@@ -35,4 +35,39 @@ describe('Driver', function () {
     });
     await driver.elementByName('Calculator');
   });
+
+  it('should set text to clipboard and paste', async function () {
+    await driver.init({
+      app: 'C:\\Windows\\System32\\notepad.exe',
+      platformName: 'Windows',
+      deviceName: 'WindowsPC'
+    });
+    const title = await driver.title();
+    title.should.eql('Untitled - Notepad');
+    const setClipboardTestText = 'Set Clipboard Test';
+    //Set test text
+    await driver.setClipboard(setClipboardTestText, 'plaintext');
+    //Paste text
+    await driver.elementByClassName('Edit').sendKeys('\uE009' + 'v');
+    const pastedText = await driver.elementByClassName('Edit').text();
+    pastedText.should.eql(setClipboardTestText);
+  });
+
+  it('should copy text to clipboard', async function () {
+    await driver.init({
+      app: 'C:\\Windows\\System32\\notepad.exe',
+      platformName: 'Windows',
+      deviceName: 'WindowsPC'
+    });
+    const title = await driver.title();
+    title.should.eql('Untitled - Notepad');
+    const getClipboardTestText = 'Get Clipboard Test';
+    //Paste text
+    await driver.elementByClassName('Edit').sendKeys(getClipboardTestText);
+    const copiedText = await driver.elementByClassName('Edit').text();
+    copiedText.should.eql(getClipboardTestText);
+    await driver.elementByClassName('Edit').clear();
+  });
+
+
 });
